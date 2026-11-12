@@ -1,0 +1,2329 @@
+/* =====================================================================
+   VoltEdge — style.css
+   ---------------------------------------------------------------------
+   The single stylesheet for every page of the VoltEdge Tech Accessories
+   Store (class assignment front-end). Sections:
+     1. Design tokens (colors, 8px spacing scale, radii, shadows)
+     2. Reset & base styles
+     3. Layout helpers (container, sections, headings with icons)
+     4. Components (icons, buttons, cards, badges, price, tables)
+     5. Shared header (logo, nav, cart button, mini-cart)
+     6. Shared footer
+     7. Page intro
+     8. Home page (hero, trust badges, featured strip, student banner)
+     9. Catalog page (filter bar, product cards, "Products worth")
+    10. Business plan page (sections, table, CSS bar chart, loop)
+    11. Keyword planner page (notice, keyword table, audience summary)
+    12. Responsive rules (tablet & phone)
+   Rules: NO blue, pink or purple; NO emoji (icons come from js/icons.js);
+   one border radius per component type; subtle shadows; flat colors.
+   ===================================================================== */
+
+
+/* ---------------------------------------------------------------------
+   1. DESIGN TOKENS
+   --------------------------------------------------------------------- */
+:root {
+  /* Brand palette (from the assignment brief) */
+  --bg: #FAF7F2;            /* warm cream page background */
+  --surface: #FFFFFF;       /* cards, header, tables */
+  --ink: #1C1917;           /* main text: warm charcoal */
+  --muted: #78716C;         /* secondary text */
+  --primary: #15803D;       /* forest green: main brand color */
+  --primary-dark: #14532D;  /* darker green: hover, footer, banner */
+  --accent: #F59E0B;        /* amber: badges, focus ring, highlights */
+
+  /* Tints derived from the palette (still green / amber / warm grey) */
+  --primary-soft: #E7F3EA;  /* pale green: icon circles, active rows */
+  --accent-soft: #FEF3DC;   /* pale amber: tag badges */
+  --accent-ink: #92400E;    /* deep amber text, readable on pale amber */
+  --border: #E7E2DA;        /* warm light border */
+  --cream-70: rgba(250, 247, 242, 0.75); /* cream text on dark green */
+
+  /* Typography */
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+
+  /* Spacing scale: strict 8px grid */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 72px;
+
+  /* One radius per component type */
+  --radius-btn: 999px;   /* buttons, pills, badges, filter chips */
+  --radius-card: 16px;   /* cards, panels, tables, banner */
+  --radius-tile: 12px;   /* images inside panels, small tiles */
+  --radius-icon: 50%;    /* icon circles */
+
+  /* Subtle shadows only */
+  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.05);
+  --shadow: 0 4px 14px rgba(28, 25, 23, 0.07);
+  --shadow-lg: 0 10px 28px rgba(28, 25, 23, 0.10);
+
+  /* Motion */
+  --ease: 0.2s ease;
+
+  /* Layout */
+  --container: 1160px;
+  --header-h: 72px;
+}
+
+
+/* ---------------------------------------------------------------------
+   2. RESET & BASE STYLES
+   --------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Anchor jumps (catalog.html#earbuds) stop below the sticky header */
+  scroll-padding-top: calc(var(--header-h) + var(--space-3));
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  /* Footer sits at the bottom even on short pages */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+h1, h2, h3, h4 {
+  margin: 0 0 var(--space-2);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+h1 { font-size: clamp(2rem, 4vw, 3rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+h3 { font-size: 1.125rem; }
+
+p {
+  margin: 0 0 var(--space-2);
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color var(--ease);
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  font: inherit;
+}
+
+/* Amber keyboard focus ring on every focusable element */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Text only for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+
+/* ---------------------------------------------------------------------
+   3. LAYOUT HELPERS
+   --------------------------------------------------------------------- */
+
+/* Centered page-width wrapper */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+}
+
+/* Vertical rhythm for page sections */
+.section {
+  padding: var(--space-6) 0;
+}
+
+.section-tight-top {
+  padding-top: 0;
+}
+
+/* Featured strip sits close under the trust badges */
+.section-featured {
+  padding-top: var(--space-3);
+}
+
+/* "Skip to content" link: hidden until it gets keyboard focus */
+.skip-link {
+  position: absolute;
+  top: -48px;
+  left: var(--space-2);
+  z-index: 100;
+  padding: 8px 16px;
+  border-radius: var(--radius-btn);
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 600;
+  transition: top var(--ease);
+}
+
+.skip-link:focus {
+  top: var(--space-1);
+  color: var(--bg);
+}
+
+/* Section title block */
+.section-head {
+  margin-bottom: var(--space-4);
+}
+
+.section-head p {
+  color: var(--muted);
+  max-width: 60ch;
+  margin: 0;
+}
+
+/* Heading row: title on the left, button on the right */
+.section-head-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* Heading with a tinted icon circle on its left */
+.heading-with-icon {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.heading-with-icon h1,
+.heading-with-icon h2 {
+  margin-bottom: var(--space-1);
+}
+
+/* Small uppercase label above headings */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+  margin-bottom: var(--space-1);
+}
+
+
+/* ---------------------------------------------------------------------
+   4. COMPONENTS
+   --------------------------------------------------------------------- */
+
+/* ---- 4a. Icons ---- */
+/* Inline SVGs from icons.js line up with text */
+.icon {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* Placeholder spans (data-icon) behave like the icon they hold */
+[data-icon] {
+  display: inline-flex;
+}
+
+/* Soft tinted circle that holds an icon */
+.icon-circle {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-icon);
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.icon-circle-sm {
+  width: 40px;
+  height: 40px;
+}
+
+.icon-circle-lg {
+  width: 56px;
+  height: 56px;
+}
+
+/* ---- 4b. Buttons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  border: 2px solid transparent;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--ease), color var(--ease),
+              border-color var(--ease), box-shadow var(--ease),
+              transform var(--ease);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Arrow icons slide right a little on hover */
+.btn .icon {
+  transition: transform var(--ease);
+}
+
+.btn:hover [data-icon="arrowRight"] .icon,
+.btn:hover .icon-arrow {
+  transform: translateX(3px);
+}
+
+/* Main call-to-action: forest green */
+.btn-primary {
+  background: var(--primary);
+  color: var(--bg);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  color: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+/* Secondary: outlined green */
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-outline:hover {
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+}
+
+/* Attention button: amber with charcoal text */
+.btn-accent {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.btn-accent:hover {
+  background: #D97706; /* darker amber */
+  color: var(--ink);
+}
+
+/* Quiet text-style button */
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  padding: 8px 16px;
+}
+
+.btn-ghost:hover {
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.btn-lg {
+  padding: 16px 32px;
+  font-size: 1.05rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Square icon-only button (cart, menu, close) */
+.icon-btn {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background var(--ease), border-color var(--ease), color var(--ease);
+}
+
+.icon-btn:hover {
+  background: var(--primary-soft);
+  border-color: var(--primary-soft);
+  color: var(--primary-dark);
+}
+
+/* ---- 4c. Cards ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3);
+}
+
+/* Cards that lift slightly on hover */
+.card-hover {
+  transition: box-shadow var(--ease), transform var(--ease);
+}
+
+.card-hover:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+/* ---- 4d. Badges / pills ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  border-radius: var(--radius-btn);
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+}
+
+.badge-accent {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+/* ---- 4e. Price ---- */
+.price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  letter-spacing: -0.01em;
+}
+
+/* ---- 4f. Tables (business plan & keyword planner) ---- */
+.table-wrap {
+  overflow-x: auto;              /* scroll sideways on small phones */
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+th,
+td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+th {
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* ---------------------------------------------------------------------
+   5. SHARED HEADER
+   Markup is built by js/main.js inside <header id="site-header">.
+   --------------------------------------------------------------------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: var(--header-h);
+}
+
+/* ---- 5a. Logo (inline SVG from main.js) ---- */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-tile);
+}
+
+.logo svg {
+  height: 32px;
+  width: auto;
+}
+
+/* ---- 5b. Navigation links ---- */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  display: block;
+  padding: 8px 16px;
+  border-radius: var(--radius-btn);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background var(--ease), color var(--ease);
+}
+
+.nav-links a:hover {
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+}
+
+/* Current page (set by main.js) */
+.nav-links a.active {
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+/* Right side: cart + mobile menu */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Menu button only shows on phones */
+.menu-toggle {
+  display: none;
+}
+
+/* ---- 5c. Cart count badge (amber bubble on the cart icon) ---- */
+.cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: var(--radius-btn);
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 0.7rem;
+  font-weight: 700;
+  border: 2px solid var(--surface);
+}
+
+/* Hide the bubble when the cart is empty */
+.cart-count[data-count="0"] {
+  display: none;
+}
+
+/* Short "bump" when an item is added */
+.cart-count.bump {
+  animation: bump 0.35s ease;
+}
+
+@keyframes bump {
+  50% { transform: scale(1.3); }
+}
+
+/* ---- 5d. Mini-cart dropdown ---- */
+.mini-cart {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  right: 0;
+  width: 380px;
+  max-width: calc(100vw - 2 * var(--space-2));
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.mini-cart[hidden] {
+  display: none;
+}
+
+.mini-cart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.mini-cart-head h2 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.mini-cart-head .icon-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+}
+
+/* Scrollable list of items */
+.mini-cart-items {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.mini-cart-item {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.mini-cart-item:last-child {
+  border-bottom: none;
+}
+
+.mini-cart-item img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-tile);
+  background: var(--surface);
+}
+
+.mini-cart-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.mini-cart-line {
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+/* - 1 + quantity stepper */
+.qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  padding: 2px;
+}
+
+.qty button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-btn);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background var(--ease);
+}
+
+.qty button:hover {
+  background: var(--primary-soft);
+}
+
+.qty span {
+  min-width: 20px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Remove (bin) button */
+.remove-btn {
+  display: inline-grid;
+  place-items: center;
+  margin-top: 6px;
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-btn);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background var(--ease), color var(--ease);
+}
+
+.remove-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+/* Empty state */
+.mini-cart-empty {
+  padding: var(--space-4) var(--space-3);
+  text-align: center;
+  color: var(--muted);
+}
+
+.mini-cart-empty .icon-circle {
+  margin-bottom: var(--space-2);
+}
+
+/* Total + actions */
+.mini-cart-foot {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.mini-cart-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+}
+
+.mini-cart-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.mini-cart-actions .btn {
+  flex: 1;
+  padding: 10px 16px;
+}
+
+.mini-cart-note {
+  margin: var(--space-2) 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+
+/* ---------------------------------------------------------------------
+   6. SHARED FOOTER
+   Dark green with cream text. Built by js/main.js.
+   --------------------------------------------------------------------- */
+.site-footer {
+  background: var(--primary-dark);
+  color: var(--cream-70);
+  padding: var(--space-5) 0 var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.footer-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 2fr 1fr 1fr;
+}
+
+/* Larger logo in the footer */
+.site-footer .logo svg {
+  height: 40px;
+}
+
+.site-footer h4 {
+  color: var(--bg);
+  font-size: 0.95rem;
+  margin-bottom: var(--space-2);
+}
+
+.site-footer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.site-footer li {
+  margin-bottom: var(--space-1);
+}
+
+.site-footer a {
+  color: var(--cream-70);
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+
+/* Footer promise list: icon + text */
+.footer-promise li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.footer-promise .icon {
+  color: var(--accent);
+}
+
+.footer-tagline {
+  margin-top: var(--space-2);
+  max-width: 34ch;
+}
+
+.footer-bottom {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(250, 247, 242, 0.15);
+  font-size: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1);
+}
+
+
+/* ---------------------------------------------------------------------
+   7. PAGE INTRO
+   --------------------------------------------------------------------- */
+.page-hero {
+  padding: var(--space-5) 0 var(--space-4);
+}
+
+.page-hero p {
+  color: var(--muted);
+  max-width: 60ch;
+  margin: 0;
+}
+
+
+/* ---------------------------------------------------------------------
+   8. HOME PAGE (index.html)
+   --------------------------------------------------------------------- */
+
+/* ---- 8a. Hero: text left, product collage right ---- */
+.hero {
+  padding: var(--space-6) 0 var(--space-5);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.hero h1 {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  letter-spacing: -0.025em;
+}
+
+/* Green highlight on a key phrase */
+.hero h1 .highlight {
+  color: var(--primary);
+}
+
+.hero-pitch {
+  font-size: 1.125rem;
+  color: var(--muted);
+  max-width: 46ch;
+  margin-bottom: var(--space-4);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.hero-note {
+  margin: var(--space-3) 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.hero-note strong {
+  color: var(--ink);
+}
+
+/* 2x2 product collage on a green panel */
+.hero-collage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--primary);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lg);
+}
+
+.hero-collage img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  background: var(--surface);
+  border-radius: var(--radius-tile);
+  padding: var(--space-1);
+}
+
+/* ---- 8b. Trust badges ---- */
+.trust {
+  padding: 0 0 var(--space-5);
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.trust-item h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.trust-item p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* ---- 8c. Featured products strip ---- */
+.featured-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+}
+
+/* Whole card links to the product in the catalog */
+.feature-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--ease), transform var(--ease);
+}
+
+.feature-card:hover {
+  color: var(--ink);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.feature-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+}
+
+.feature-img {
+  padding: var(--space-3) var(--space-3) 0;
+}
+
+.feature-img img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-img img {
+  transform: scale(1.04);
+}
+
+.feature-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.feature-body h3 {
+  font-size: 1rem;
+  margin-bottom: var(--space-1);
+  flex: 1;
+}
+
+.feature-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+}
+
+.feature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.feature-link .icon {
+  transition: transform var(--ease);
+}
+
+.feature-card:hover .feature-link .icon {
+  transform: translateX(3px);
+}
+
+/* ---- 8d. Student discount banner (flat dark green) ---- */
+.student-banner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--primary-dark);
+  color: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+/* Amber "10% OFF" circle */
+.discount-circle {
+  display: grid;
+  place-items: center;
+  width: 128px;
+  height: 128px;
+  border-radius: var(--radius-icon);
+  background: var(--accent);
+  color: var(--ink);
+  text-align: center;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.discount-circle strong {
+  display: block;
+  font-size: 2.5rem;
+  letter-spacing: -0.03em;
+}
+
+.discount-circle span {
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+}
+
+.student-banner .eyebrow {
+  color: var(--accent);
+}
+
+.student-banner h2 {
+  color: var(--bg);
+  margin-bottom: var(--space-1);
+}
+
+.student-banner p {
+  color: var(--cream-70);
+  margin: 0;
+  max-width: 52ch;
+}
+
+/* Dashed coupon with the promo code */
+.promo-code {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  padding: 6px 16px;
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius-btn);
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+
+
+/* ---------------------------------------------------------------------
+   9. CATALOG PAGE (catalog.html)
+   --------------------------------------------------------------------- */
+
+/* ---- 9a. Filter bar ---- */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* One filter button */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background var(--ease), color var(--ease), border-color var(--ease);
+}
+
+.chip:hover {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+}
+
+/* Selected filter (aria-pressed is set by catalog.js) */
+.chip[aria-pressed="true"] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--bg);
+}
+
+.filter-count {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ---- 9b. Product grid: 4 / 2 / 1 columns ---- */
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+}
+
+/* ---- 9c. Product card ---- */
+.product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--ease), transform var(--ease);
+}
+
+.product-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+/* Cards hidden by the filter */
+.product-card[hidden] {
+  display: none;
+}
+
+/* Brief amber glow when reached via catalog.html#id */
+.product-card.highlight {
+  animation: card-highlight 2.2s ease;
+}
+
+@keyframes card-highlight {
+  0%, 60% {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft), var(--shadow-lg);
+  }
+  100% {
+    border-color: var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.product-img {
+  position: relative;
+  padding: var(--space-3) var(--space-3) var(--space-1);
+}
+
+.product-img img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+.product-img .badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+}
+
+.product-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+/* Small category line with its icon */
+.product-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--primary);
+  margin-bottom: var(--space-1);
+}
+
+.product-body h3 {
+  font-size: 1.05rem;
+  margin-bottom: var(--space-1);
+}
+
+.product-desc {
+  font-size: 0.875rem;
+  color: var(--muted);
+  flex: 1;
+}
+
+.product-price {
+  margin-bottom: var(--space-2);
+}
+
+/* "Added" state on the Add to cart button */
+.btn.is-added {
+  background: var(--primary-dark);
+}
+
+/* ---- 9d. "Products worth" block on each card ---- */
+.worth {
+  margin-bottom: var(--space-2);
+  padding: 12px var(--space-2);
+  border-radius: var(--radius-tile);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+}
+
+.worth-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 var(--space-1);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+/* 2x2 grid of pairs; each label sits above its value so nothing wraps */
+.worth dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+}
+
+.worth dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.worth dd {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+/* Margin value in green to stand out */
+.worth .worth-margin dd {
+  color: var(--primary);
+}
+
+/* Margin % bar */
+.margin-bar {
+  margin-top: var(--space-1);
+  height: 6px;
+  border-radius: var(--radius-btn);
+  background: var(--border);
+  overflow: hidden;
+}
+
+.margin-bar span {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-btn);
+  background: var(--primary);
+}
+
+
+/* ---------------------------------------------------------------------
+   10. BUSINESS PLAN PAGE (business.html)
+   --------------------------------------------------------------------- */
+
+/* ---- 10a. "On this page" jump links ---- */
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.toc a {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: border-color var(--ease), color var(--ease), background var(--ease);
+}
+
+.toc a:hover {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  background: var(--primary-soft);
+}
+
+/* Plan sections are a little tighter than home sections */
+.plan-section {
+  padding: var(--space-5) 0;
+}
+
+/* Every other plan section sits on white to separate them */
+.plan-section:nth-of-type(even) {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ---- 10b. Shared lists ---- */
+/* Bullet list with green tick icons */
+.check-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.check-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  margin-bottom: var(--space-1);
+  font-size: 0.925rem;
+}
+
+.check-list li:last-child {
+  margin-bottom: 0;
+}
+
+.check-list [data-icon] {
+  margin-top: 4px;
+  color: var(--primary);
+}
+
+/* Inline promo code text */
+.code {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  color: var(--primary-dark);
+}
+
+/* ---- 10c. Marketing cards ---- */
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.plan-card .icon-circle {
+  margin-bottom: var(--space-2);
+}
+
+.plan-card > p {
+  font-size: 0.925rem;
+}
+
+/* ---- 10d. Imaging plan ---- */
+.imaging-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.imaging-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: var(--space-3);
+}
+
+.imaging-head h3 {
+  margin: 0;
+  flex: 1;
+}
+
+/* Four studio shots in a row */
+.shot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.shot-grid img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-tile);
+  background: var(--surface);
+}
+
+/* Numbered lifestyle shot list */
+.shot-list {
+  counter-reset: shot;
+  list-style: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+}
+
+.shot-list li {
+  counter-increment: shot;
+  position: relative;
+  padding: 12px 12px 12px 48px;
+  margin-bottom: var(--space-1);
+  border-radius: var(--radius-tile);
+  background: var(--bg);
+  font-size: 0.925rem;
+}
+
+/* Amber number circle before each shot */
+.shot-list li::before {
+  content: counter(shot);
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-icon);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ---- 10e. Products worth table ---- */
+/* Number columns line up on the right */
+.worth-table .num {
+  text-align: right;
+}
+
+.table-product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.table-product img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-tile);
+  background: var(--surface);
+}
+
+/* Margin cell: small bar + percentage */
+.table-margin {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.table-margin-bar {
+  width: 96px;
+  height: 8px;
+  border-radius: var(--radius-btn);
+  background: var(--border);
+  overflow: hidden;
+}
+
+.table-margin-bar span {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-btn);
+  background: var(--primary);
+}
+
+.table-margin strong {
+  color: var(--primary-dark);
+}
+
+/* Average row at the bottom */
+.worth-table tfoot td {
+  background: var(--bg);
+  border-top: 2px solid var(--border);
+  border-bottom: none;
+  font-weight: 600;
+}
+
+/* ---- 10f. Expected revenue ---- */
+.revenue-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.revenue-figures {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* "80 x Rs. 1,800 = Rs. 144,000" */
+.formula {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.formula-part {
+  display: flex;
+  flex-direction: column;
+}
+
+.formula-part strong {
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.formula-part small {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.formula-op {
+  font-size: 1.5rem;
+  color: var(--muted);
+}
+
+.formula-result strong {
+  color: var(--primary);
+}
+
+/* 2x2 small stat tiles */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-2) var(--space-3);
+}
+
+.stat small {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.stat strong {
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+}
+
+/* ---- 10g. Pure-CSS bar chart ----
+   Each .bar is a column: value label, coloured fill, name label.
+   The fill height is --h (0 to 1, set by business.js) x 200px.     */
+.chart-card figcaption h3 {
+  margin-bottom: 4px;
+}
+
+.chart-card figcaption p {
+  font-size: 0.875rem;
+  margin-bottom: var(--space-3);
+}
+
+.chart-card {
+  margin: 0;
+}
+
+.bar-chart {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  align-items: end;
+  padding-top: var(--space-1);
+  /* Baseline the bars stand on */
+  background: linear-gradient(var(--border), var(--border)) bottom 32px left 0 / 100% 1px no-repeat;
+}
+
+.bar {
+  --h: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  border-radius: var(--radius-tile);
+  outline-offset: 4px;
+}
+
+/* Value printed above each bar (direct label) */
+.bar-value {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* The bar itself: rounded top, grows in on load */
+.bar-fill {
+  width: 100%;
+  max-width: 72px;
+  height: calc(var(--h) * 200px);
+  border-radius: 4px 4px 0 0;
+  background: var(--primary);
+  transition: height 0.8s ease, background var(--ease);
+}
+
+.bar-muted .bar-fill {
+  background: #A8A29E; /* warm grey for cost */
+}
+
+.bar[data-bar="profit"] .bar-fill {
+  background: var(--accent);
+}
+
+/* Hover / keyboard focus: darken the bar */
+.bar:hover .bar-fill,
+.bar:focus-visible .bar-fill {
+  filter: brightness(0.88);
+}
+
+.bar-label {
+  height: 24px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ---- 10h. Area of success ---- */
+.success-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.success-card .icon-circle {
+  margin-bottom: var(--space-2);
+}
+
+/* Repeat-purchase loop: 4 connected steps */
+.loop {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+  counter-reset: none;
+}
+
+.loop li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--primary-soft);
+  border-radius: var(--radius-card);
+}
+
+/* Small connector line between steps (desktop only) */
+.loop li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(-1 * var(--space-2));
+  width: var(--space-2);
+  height: 2px;
+  background: var(--primary);
+}
+
+.loop-num {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-icon);
+  background: var(--primary);
+  color: var(--bg);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.loop strong {
+  color: var(--primary-dark);
+}
+
+.loop small {
+  color: var(--ink);
+  font-size: 0.85rem;
+}
+
+
+/* ---------------------------------------------------------------------
+   11. KEYWORD PLANNER PAGE (keywords.html)
+   --------------------------------------------------------------------- */
+
+/* ---- 11a. "Replace with my real data" notice ---- */
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--accent);
+  border-left-width: 4px;
+  border-radius: var(--radius-card);
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.notice[hidden] {
+  display: none;
+}
+
+.notice [data-icon] {
+  color: var(--accent-ink);
+  margin-top: 2px;
+}
+
+.notice p {
+  margin: 0;
+  font-size: 0.925rem;
+}
+
+/* ---- 11b. Keyword table ---- */
+.keyword-table .num {
+  text-align: right;
+}
+
+.keyword-cell {
+  white-space: normal;
+}
+
+.keyword {
+  display: block;
+  font-weight: 600;
+}
+
+/* Small link to the matching product */
+.keyword-product {
+  font-size: 0.8rem;
+  margin-right: var(--space-1);
+}
+
+/* Rows that still hold sample numbers: dashed amber edge + label */
+.keyword-table tr.is-sample td:first-child {
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+
+.sample-tag {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius-btn);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* Competition badge: word + color, never color alone */
+.comp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-btn);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Small dot before the word */
+.comp::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-icon);
+  background: currentColor;
+}
+
+.comp-low {
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+}
+
+.comp-medium {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.comp-high {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.table-note {
+  margin: var(--space-1) 0 var(--space-5);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* ---- 11c. Audience summary + how-to ---- */
+.keyword-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.audience-head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.audience-head h2 {
+  font-size: 1.35rem;
+  margin-bottom: 4px;
+}
+
+.audience-head p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Label / text rows inside the summary box */
+.audience-list {
+  margin: 0 0 var(--space-3);
+}
+
+.audience-list div {
+  display: grid;
+  grid-template-columns: 136px 1fr;
+  gap: var(--space-2);
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.audience-list dt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: 600;
+  color: var(--primary-dark);
+  align-self: start;
+}
+
+.audience-list dd {
+  margin: 0;
+  font-size: 0.925rem;
+}
+
+/* Green takeaway strip at the bottom of the box */
+.audience-takeaway {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: var(--space-2);
+  border-radius: var(--radius-tile);
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+}
+
+.audience-takeaway [data-icon] {
+  margin-top: 3px;
+}
+
+.audience-takeaway p {
+  margin: 0;
+  font-size: 0.925rem;
+  color: var(--ink);
+}
+
+/* Numbered how-to steps */
+.howto-steps {
+  counter-reset: step;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.howto-steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 var(--space-2) 44px;
+  font-size: 0.925rem;
+}
+
+.howto-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -2px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-icon);
+  background: var(--primary);
+  color: var(--bg);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.howto code {
+  font-size: 0.85rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+
+/* ---------------------------------------------------------------------
+   12. RESPONSIVE RULES
+   --------------------------------------------------------------------- */
+
+/* Tablet and small laptop */
+@media (max-width: 1024px) {
+  .catalog-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Business plan: stack two-column blocks */
+  .plan-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .imaging-grid,
+  .revenue-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .loop {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .loop li::after {
+    display: none;
+  }
+
+  /* Keyword page: summary and how-to stack */
+  .keyword-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-grid > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Home: stack the hero, 2 featured cards per row */
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-collage {
+    max-width: 480px;
+  }
+
+  .featured-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Banner: circle + text on top, button underneath */
+  .student-banner {
+    grid-template-columns: auto 1fr;
+    padding: var(--space-4);
+  }
+
+  .student-banner .btn {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+/* Phone */
+@media (max-width: 720px) {
+  .container {
+    padding: 0 var(--space-2);
+  }
+
+  .section {
+    padding: var(--space-5) 0;
+  }
+
+  /* Collapse nav into a dropdown under the header */
+  .menu-toggle {
+    display: inline-grid;
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: calc(-1 * var(--space-2));
+    right: calc(-1 * var(--space-2));
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--space-2);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-links a {
+    padding: 12px 16px;
+  }
+
+  /* Mini-cart: pinned to the screen edges with a 16px gutter */
+  .mini-cart {
+    position: fixed;
+    top: calc(var(--header-h) + var(--space-1));
+    left: var(--space-2);
+    right: var(--space-2);
+    width: auto;
+    max-width: none;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Home page */
+  .hero {
+    padding: var(--space-4) 0;
+  }
+
+  .hero-actions .btn {
+    flex: 1;
+  }
+
+  .trust-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+  .featured-strip {
+    gap: var(--space-2);
+  }
+
+  .feature-img {
+    padding: var(--space-2) var(--space-2) 0;
+  }
+
+  .feature-body {
+    padding: var(--space-1) var(--space-2) var(--space-2);
+  }
+
+  .feature-body h3 {
+    font-size: 0.9rem;
+  }
+
+  .feature-foot {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .feature-card .price {
+    font-size: 1.05rem;
+  }
+
+  .student-banner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .discount-circle {
+    margin: 0 auto;
+    width: 112px;
+    height: 112px;
+  }
+
+  .student-banner .btn {
+    justify-self: stretch;
+  }
+
+  /* Catalog: 1 column, filter chips scroll sideways */
+  .catalog-grid {
+    grid-template-columns: 1fr;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .filter-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 4px;
+  }
+
+  .chip {
+    flex-shrink: 0;
+  }
+
+  /* Business plan on phones: everything in one column */
+  .toc {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .toc a {
+    flex-shrink: 0;
+  }
+
+  .plan-section {
+    padding: var(--space-4) 0;
+  }
+
+  .plan-grid,
+  .success-grid,
+  .loop {
+    grid-template-columns: 1fr;
+  }
+
+  .shot-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .formula-part strong {
+    font-size: 1.2rem;
+  }
+
+  /* Formula: "80 x Rs. 1,800" on one line, "= Rs. 144,000" below it */
+  .formula {
+    justify-content: flex-start;
+  }
+
+  /* The "=" moves in front of the result (see ::before below) */
+  .formula-eq {
+    display: none;
+  }
+
+  .formula-result {
+    flex-basis: 100%;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .formula-result strong::before {
+    content: "= ";
+    color: var(--muted);
+  }
+
+  /* Data tables (.stack-table): each row becomes a small stacked card */
+  .stack-table thead {
+    display: none;
+  }
+
+  .stack-table,
+  .stack-table tbody,
+  .stack-table tr,
+  .stack-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .stack-table tbody tr {
+    padding: 12px var(--space-2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stack-table td {
+    padding: 4px 0;
+    border: none;
+  }
+
+  /* Product name row on top, then label: value rows */
+  .stack-table td[data-label] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+  }
+
+  .stack-table td[data-label]::before {
+    content: attr(data-label);
+    color: var(--muted);
+  }
+
+  .stack-table td:first-child {
+    padding-bottom: var(--space-1);
+  }
+
+  /* Keyword table on phones */
+  .keyword-table tr.is-sample td:first-child {
+    box-shadow: none;
+  }
+
+  .keyword-table tr.is-sample {
+    box-shadow: inset 4px 0 0 var(--accent);
+  }
+
+  .audience-list div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .notice {
+    padding: var(--space-2);
+  }
+
+  .table-margin-bar {
+    width: 72px;
+  }
+
+  /* Average row: label left, value right */
+  .stack-table tfoot tr {
+    display: flex;
+    justify-content: space-between;
+    background: var(--bg);
+  }
+
+  .stack-table tfoot td {
+    display: block;
+    width: auto;
+    padding: 12px var(--space-2);
+    white-space: normal;
+  }
+
+  .stat {
+    padding: var(--space-2);
+  }
+
+  .stat strong {
+    font-size: 1.05rem;
+  }
+
+  .bar-chart {
+    gap: var(--space-2);
+  }
+
+  .bar-value,
+  .bar-label {
+    font-size: 0.75rem;
+  }
+}
